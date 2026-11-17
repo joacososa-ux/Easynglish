@@ -1,3 +1,7 @@
 name = "easynglish-api"
 main = "worker.js"
 compatibility_date = "2026-01-01"
+
+[[kv_namespaces]]
+binding = "USAGE"
+id = "8a15aa556fd047d1a26e8f4142e86e90"
