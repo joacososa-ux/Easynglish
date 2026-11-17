@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easynglish</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#E0245E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--pink:#E0245E;--ink:#2B1636;--muted:#5E4767;--violet:#6D4AFF;--bg:#FFF1F5}
+*{box-sizing:border-box}
+body{margin:0;font-family:Nunito,system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;position:relative;overflow-x:hidden}
+.blob{position:fixed;border-radius:50%;filter:blur(70px);z-index:0;pointer-events:none;opacity:.7}
+main{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:24px 20px 80px;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-family:Fredoka,system-ui,sans-serif;margin:0}
+button{font-family:inherit;cursor:pointer;border:0}
+button:focus-visible,input:focus-visible{outline:3px solid var(--violet);outline-offset:3px}
+.btn{min-height:52px;padding:0 24px;border-radius:999px;font-weight:800;font-size:16px;background:var(--pink);color:#fff;box-shadow:0 10px 24px rgba(224,36,94,.35);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:scale(.95)}
+.btn.alt{background:#EDE7FF;color:#4B2FD0;box-shadow:none}
+.btn:disabled{opacity:.5;cursor:default;transform:none}
+.card{background:rgba(255,255,255,.85);border-radius:32px;padding:24px;box-shadow:0 20px 50px rgba(224,36,94,.14)}
+.field{display:flex;gap:8px;align-items:center;background:#fff;border-radius:999px;padding:8px;box-shadow:0 16px 36px rgba(224,36,94,.14)}
+.field input{flex:1;min-width:0;height:52px;border:0;outline:0;background:transparent;font:700 18px Nunito,system-ui;padding:0 16px;color:var(--ink)}
+.seg{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.85);border-radius:999px;width:max-content}
+.seg button{min-height:44px;min-width:60px;padding:0 16px;border-radius:999px;background:transparent;font-weight:800;font-size:15px;color:var(--ink)}
+.seg button[aria-pressed=true]{background:var(--pink);color:#fff}
+.pill{display:inline-block;padding:5px 14px;border-radius:999px;font-weight:800;font-size:13px}
+.box{border-radius:22px;padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+.ex{border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:10px}
+mark{background:rgba(255,255,255,.9);color:var(--ink);padding:0 5px;border-radius:8px;font-weight:800}
+.words{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:12px}
+.word{text-align:left;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-height:44px;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.word:hover{transform:translateY(-4px)}
+.msg{font-weight:700;color:var(--muted);text-align:center}
+.hidden{display:none !important}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.rise{animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+@keyframes wave{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+.bars span{display:inline-block;width:6px;height:28px;border-radius:3px;margin:0 2px;background:var(--pink);transform-origin:center;opacity:.35}
+.playing .bars span{opacity:1;animation:wave .7s ease-in-out infinite}
+.playing .bars span:nth-child(2){animation-delay:.1s}.playing .bars span:nth-child(3){animation-delay:.2s}.playing .bars span:nth-child(4){animation-delay:.3s}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div class="blob" style="width:420px;height:420px;left:-120px;top:-100px;background:#FFB8D2"></div>
+<div class="blob" style="width:400px;height:400px;right:-120px;top:200px;background:#D9CCFF"></div>
+<div class="blob" style="width:380px;height:380px;left:20%;bottom:-120px;background:#FFD9BF"></div>
+
+<main>
+<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+  <h2 style="font-size:28px">Easy<span style="color:var(--pink)">nglish</span></h2>
+  <div id="userbox" class="hidden" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <span id="uname" style="font-weight:700;color:var(--muted);font-size:14px"></span>
+    <button class="btn alt" id="logout" style="min-height:44px;padding:0 16px;font-size:14px">Salir</button>
+  </div>
+</header>
+
+<section id="loginView" class="card rise" style="text-align:center;display:flex;flex-direction:column;gap:18px;align-items:center">
+  <h1 style="font-size:40px;line-height:1.1">Tu diccionario de inglés, siempre contigo</h1>
+  <p class="msg" style="margin:0;font-size:17px">Iniciá sesión con Google para guardar tus palabras y sincronizarlas entre dispositivos.</p>
+  <button class="btn" id="login">Entrar con Google</button>
+  <p id="loginStatus" class="msg" style="font-size:15px"></p>
+</section>
+
+<section id="appView" class="hidden" style="display:flex;flex-direction:column;gap:24px">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <h1 style="font-size:34px">¿Qué palabra nueva viste?</h1>
+    <form id="searchForm" class="field" autocomplete="off">
+      <label for="word" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Palabra en inglés</label>
+      <input id="word" placeholder="Escribí una palabra, por ejemplo: thrive" maxlength="60" required>
+      <button class="btn" id="go" type="submit">Buscar</button>
+    </form>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <div class="seg" role="group" aria-label="Acento">
+        <button type="button" data-acc="en-US" aria-pressed="true">US</button>
+        <button type="button" data-acc="en-GB" aria-pressed="false">UK</button>
+        <button type="button" data-acc="en-AU" aria-pressed="false">AU</button>
+      </div>
+      <span id="status" class="msg" style="font-size:15px"></span>
+    </div>
+  </div>
+
+  <article id="result" class="card hidden" aria-live="polite"></article>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <h2 style="font-size:28px">Tu diccionario</h2>
+      <span id="count" class="pill" style="background:#FFC2D8"></span>
+    </div>
+    <div id="list" class="words"></div>
+    <p id="empty" class="msg hidden">Todavía no guardaste palabras. Buscá una arriba y tocá "Guardar".</p>
+  </section>
+</section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDsDBW2kgTFN93f37mdlxkeQiL5iAB2siI",
+  authDomain: "easynglish-db553.firebaseapp.com",
+  projectId: "easynglish-db553",
+  storageBucket: "easynglish-db553.firebasestorage.app",
+  messagingSenderId: "155290776168",
+  appId: "1:155290776168:web:48de59dfcc16057e4981dd"
+};
+const WORKER_URL = "https://easynglish-api.joacososa01.workers.dev";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let user = null;
+let unsubscribe = null;
+let words = [];
+let accent = localStorage.getItem("accent") || "en-US";
+let current = null;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const COLORS = ["#FFE1EA", "#EDE7FF", "#FFE8D6", "#D6F5EA", "#FFF3C4"];
+const CTX = { formal: ["FORMAL", "#EDE7FF", "#4B2FD0"], casual: ["COTIDIANO", "#FFE8D6", "#9A3D00"], work: ["TRABAJO", "#D6F5EA", "#0B6B58"] };
+
+document.querySelectorAll("[data-acc]").forEach((b) => {
+  b.setAttribute("aria-pressed", String(b.dataset.acc === accent));
+  b.addEventListener("click", () => {
+    accent = b.dataset.acc;
+    localStorage.setItem("accent", accent);
+    document.querySelectorAll("[data-acc]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.acc === accent)));
+    if (current) renderCard(current.entry, current.saved);
+  });
+});
+
+$("login").addEventListener("click", () => {
+  $("loginStatus").textContent = "";
+  signInWithPopup(auth, provider).catch((e) => { $("loginStatus").textContent = "No se pudo iniciar sesión (" + e.code + ")."; });
+});
+$("logout").addEventListener("click", () => signOut(auth));
+
+function status(text) { $("status").textContent = text || ""; }
+
+onAuthStateChanged(auth, (u) => {
+  user = u;
+  $("loginView").classList.toggle("hidden", !!u);
+  $("appView").classList.toggle("hidden", !u);
+  $("userbox").classList.toggle("hidden", !u);
+  if (u) {
+    $("uname").textContent = u.displayName || u.email || "";
+    listen();
+  } else {
+    if (unsubscribe) unsubscribe();
+    words = [];
+    renderList();
+  }
+});
+
+function listen() {
+  if (unsubscribe) unsubscribe();
+  const q = query(collection(db, "users", user.uid, "words"), orderBy("addedAt", "desc"));
+  unsubscribe = onSnapshot(q, (snap) => {
+    words = snap.docs.map((d) => d.data());
+    renderList();
+  }, (err) => status("Error al leer tu diccionario: " + err.code));
+}
+
+$("searchForm").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const w = $("word").value.trim().toLowerCase();
+  if (!w) return;
+  const saved = words.find((x) => x.word === w);
+  if (saved) { status(""); renderCard(saved, true); return; }
+  $("go").disabled = true;
+  status("Buscando la palabra…");
+  try {
+    const token = await user.getIdToken();
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
+      body: JSON.stringify({ word: w })
+    });
+    const data = await res.json();
+    if (!res.ok) { status(messageFor(data.error)); return; }
+    data.word = data.word || w;
+    status("");
+    renderCard(data, false);
+  } catch (e) {
+    status("No hay conexión con el servidor.");
+  } finally {
+    $("go").disabled = false;
+  }
+});
+
+function messageFor(code) {
+  if (code === "daily_limit") return "Llegaste al límite diario de búsquedas.";
+  if (code === "invalid_word") return "Escribí una palabra en inglés, sin números ni símbolos.";
+  if (code === "unauthorized") return "Tu sesión venció. Volvé a entrar.";
+  return "Algo salió mal al buscar. Probá de nuevo.";
+}
+
+function ipaFor(entry) {
+  return accent === "en-GB" ? (entry.ipa_uk || entry.ipa_us) : (entry.ipa_us || entry.ipa_uk);
+}
+
+function hitHtml(ex) {
+  const i = ex.en.toLowerCase().indexOf(String(ex.hit || "").toLowerCase());
+  if (!ex.hit || i < 0) return esc(ex.en);
+  return esc(ex.en.slice(0, i)) + "<mark>" + esc(ex.en.slice(i, i + ex.hit.length)) + "</mark>" + esc(ex.en.slice(i + ex.hit.length));
+}
+
+function renderCard(entry, saved) {
+  current = { entry: entry, saved: saved };
+  const examples = (entry.examples || []).map((ex) => {
+    const c = CTX[ex.ctx] || CTX.casual;
+    return '<div class="ex" style="background:' + c[1] + '">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">' +
+      '<span style="font-weight:800;font-size:13px;color:' + c[2] + '">' + c[0] + '</span>' +
+      '<button class="btn alt" data-say="' + esc(ex.en) + '" aria-label="Escuchar ejemplo" style="min-height:44px;min-width:44px;padding:0 14px">▶</button></div>' +
+      '<p style="margin:0;font-size:18px;line-height:1.5;font-weight:700">' + hitHtml(ex) + '</p>' +
+      '<p style="margin:0;font-size:15px;color:var(--muted);font-weight:600">' + esc(ex.es) + '</p></div>';
+  }).join("");
+
+  const el = $("result");
+  el.classList.remove("hidden", "rise");
+  void el.offsetWidth;
+  el.classList.add("rise");
+  el.innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:22px">' +
+    '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:flex-start">' +
+    '<div style="display:flex;flex-direction:column;gap:10px">' +
+    '<span class="pill" style="background:#EDE7FF;color:#4B2FD0">' + esc(entry.pos || "") + '</span>' +
+    '<h2 style="font-size:58px;line-height:1;letter-spacing:-1px">' + esc(entry.word) + '</h2>' +
+    '<p style="margin:0;font-size:18px;font-weight:800;color:var(--muted)">' + esc(ipaFor(entry)) + '</p></div>' +
+    '<div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">' +
+    '<button class="btn" id="say">Escuchar</button>' +
+    '<button class="btn alt" id="sayslow">Más lento</button></div>' +
+    '<div class="bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div></div></div>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:12px">' +
+    '<div class="box" style="background:#FFE9F0"><span style="font-weight:800;font-size:13px;color:#B01A48">EN INGLÉS</span><p style="margin:0;font-size:18px;font-weight:700;line-height:1.45">' + esc(entry.en) + '</p></div>' +
+    '<div class="box" style="background:#EDE7FF"><span style="font-weight:800;font-size:13px;color:#4B2FD0">EN ESPAÑOL</span><p style="margin:0;font-size:18px;font-weight:700;line-height:1.45">' + esc(entry.es) + '</p></div></div>' +
+    (entry.esLong ? '<p style="margin:0;font-size:16px;font-weight:600;color:var(--muted)">' + esc(entry.esLong) + '</p>' : '') +
+    '<div style="display:flex;flex-direction:column;gap:12px"><h3 style="font-size:24px">Ejemplos en contexto</h3>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px">' + examples + '</div></div>' +
+    '<div style="display:flex;justify-content:flex-end">' +
+    (saved ? '<span class="pill" style="background:#D6F5EA;color:#0B6B58">Ya está en tu diccionario</span>'
+           : '<button class="btn" id="save">Guardar en mi diccionario</button>') +
+    '</div></div>';
+
+  $("say").addEventListener("click", () => say(entry.word, 0.9));
+  $("sayslow").addEventListener("click", () => say(entry.word, 0.5));
+  el.querySelectorAll("[data-say]").forEach((b) => b.addEventListener("click", () => say(b.dataset.say, 0.95)));
+  const sv = $("save");
+  if (sv) sv.addEventListener("click", () => save(entry));
+}
+
+async function save(entry) {
+  const key = String(entry.word).toLowerCase();
+  try {
+    await setDoc(doc(db, "users", user.uid, "words", key), {
+      word: key,
+      pos: entry.pos || "",
+      ipa_us: entry.ipa_us || "",
+      ipa_uk: entry.ipa_uk || "",
+      en: entry.en || "",
+      es: entry.es || "",
+      esLong: entry.esLong || "",
+      examples: entry.examples || [],
+      addedAt: serverTimestamp()
+    });
+    renderCard(entry, true);
+    status("Guardada en tu diccionario.");
+  } catch (e) {
+    status("No se pudo guardar (" + e.code + ").");
+  }
+}
+
+function say(text, rate) {
+  if (!("speechSynthesis" in window)) { status("Tu navegador no puede reproducir audio."); return; }
+  speechSynthesis.cancel();
+  const r = $("result");
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = accent;
+  u.rate = rate;
+  r.classList.add("playing");
+  u.onend = () => r.classList.remove("playing");
+  u.onerror = () => r.classList.remove("playing");
+  speechSynthesis.speak(u);
+}
+
+function renderList() {
+  const list = $("list");
+  $("count").textContent = words.length + (words.length === 1 ? " palabra" : " palabras");
+  $("empty").classList.toggle("hidden", words.length > 0);
+  list.innerHTML = words.map((w, i) =>
+    '<button class="word rise" style="background:' + COLORS[i % COLORS.length] + '" data-key="' + esc(w.word) + '">' +
+    '<span style="font-family:Fredoka,system-ui;font-size:24px;line-height:1.1">' + esc(w.word) + '</span>' +
+    '<span style="font-size:12px;font-weight:800;color:var(--muted)">' + esc((w.pos || "").toUpperCase()) + '</span>' +
+    '<span style="font-size:16px;font-weight:700">' + esc(w.es) + '</span></button>'
+  ).join("");
+  list.querySelectorAll("[data-key]").forEach((b) => b.addEventListener("click", () => {
+    const w = words.find((x) => x.word === b.dataset.key);
+    if (w) { status(""); renderCard(w, true); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  }));
+}
+</script>
+</body>
+</html>
