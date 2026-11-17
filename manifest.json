@@ -1,0 +1,12 @@
+{
+  "name": "Easynglish",
+  "short_name": "Easynglish",
+  "description": "Aprende inglés: guarda palabras, significados, ejemplos y pronunciación. / Learn English: save words, meanings, examples and pronunciation.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFF1F5",
+  "theme_color": "#F472B6",
+  "lang": "es",
+  "icons": []
+}
