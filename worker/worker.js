@@ -1,7 +1,7 @@
 const FIREBASE_WEB_API_KEY = "AIzaSyDsDBW2kgTFN93f37mdlxkeQiL5iAB2siI";
 const ALLOWED_ORIGINS = ["https://joacososa-ux.github.io", "http://localhost:8080"];
 const DAILY_LIMIT = 30;
-const MODEL = "llama-3.3-70b-versatile";
+const MODEL = "llama-3.1-8b-instant";
 
 const SYSTEM = 'You are an English teacher for a Spanish speaker. ' +
   'Given one English word or phrase, reply ONLY with a JSON object, no markdown, shaped like: ' +
