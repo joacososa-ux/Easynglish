@@ -1,7 +1,7 @@
 const FIREBASE_WEB_API_KEY = "AIzaSyDsDBW2kgTFN93f37mdlxkeQiL5iAB2siI";
 const ALLOWED_ORIGINS = ["https://joacososa-ux.github.io", "http://localhost:8080"];
 const DAILY_LIMIT = 30;
-const MODEL = "claude-haiku-5-5";
+const MODEL = "llama-3.3-70b-versatile";
 
 const SYSTEM = 'You are an English teacher for a Spanish speaker. ' +
   'Given one English word or phrase, reply ONLY with a JSON object, no markdown, shaped like: ' +
@@ -34,23 +34,25 @@ export default {
     if (used >= DAILY_LIMIT) return reply({ error: "daily_limit" }, 429, cors);
     await env.USAGE.put(key, String(used + 1), { expirationTtl: 172800 });
 
-    const ai = await fetch("https://api.anthropic.com/v1/messages", {
+    const ai = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "x-api-key": env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
+        "Authorization": "Bearer " + env.GROQ_API_KEY,
         "content-type": "application/json"
       },
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 900,
-        system: SYSTEM,
-        messages: [{ role: "user", content: word }]
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM },
+          { role: "user", content: word }
+        ]
       })
     });
     if (!ai.ok) return reply({ error: "model_error" }, 502, cors);
     const data = await ai.json();
-    const text = (data.content && data.content[0] && data.content[0].text) || "{}";
+    const text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "{}";
     return new Response(text, { headers: Object.assign({ "Content-Type": "application/json" }, cors) });
   }
 };
