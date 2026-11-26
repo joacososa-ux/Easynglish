@@ -50,7 +50,7 @@ export default {
         ]
       })
     });
-    if (!ai.ok) return reply({ error: "model_error" }, 502, cors);
+    if (!ai.ok) { const detail = (await ai.text()).slice(0, 300); return reply({ error: "model_error", status: ai.status, detail: detail }, 502, cors); }
     const data = await ai.json();
     const text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "{}";
     return new Response(text, { headers: Object.assign({ "Content-Type": "application/json" }, cors) });
