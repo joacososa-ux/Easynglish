@@ -210,9 +210,28 @@ mark{background:rgba(255,255,255,.9);color:var(--ink);padding:0 5px;border-radiu
 .wbtns span.ok{background:var(--ok);color:#fff;border-color:transparent}
 .wbtns span.hl{transform:scale(1.06)}
 @media (prefers-reduced-motion: reduce){.wtyp::after,.wgo.load{animation:none}}
+
+/* pantalla de carga */
+#splash{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .5s var(--out),visibility .5s}
+#splash.out{opacity:0;visibility:hidden}
+.sp-logo{width:84px;height:84px;border-radius:26px;background:linear-gradient(160deg,#F472B6,#E0245E 70%,#FB923C);display:grid;place-items:center;color:#fff;font:600 42px Fredoka,sans-serif;box-shadow:0 18px 40px rgba(224,36,94,.35);animation:spPop .8s var(--spring) both,spFloat 2.4s ease-in-out .8s infinite}
+.sp-brand{font:600 30px Fredoka,sans-serif;animation:rise .6s var(--out) .3s both}
+.sp-brand span{color:var(--pink)}
+.sp-bars{display:flex;gap:6px;height:28px;align-items:center;animation:rise .6s var(--out) .5s both}
+.sp-bars i{width:7px;height:100%;border-radius:4px;background:var(--pink);animation:spWave 1s ease-in-out infinite}
+.sp-bars i:nth-child(2){animation-delay:.12s}.sp-bars i:nth-child(3){animation-delay:.24s}.sp-bars i:nth-child(4){animation-delay:.36s}.sp-bars i:nth-child(5){animation-delay:.48s}
+@keyframes spPop{0%{opacity:0;transform:scale(.5) rotate(-12deg)}70%{transform:scale(1.08) rotate(3deg)}100%{opacity:1;transform:none}}
+@keyframes spFloat{50%{transform:translateY(-8px)}}
+@keyframes spWave{0%,100%{transform:scaleY(.35);opacity:.5}50%{transform:scaleY(1);opacity:1}}
+@media (prefers-reduced-motion: reduce){.sp-logo,.sp-brand,.sp-bars,.sp-bars i{animation:none}}
 </style>
 </head>
 <body>
+<div id="splash" role="status" aria-label="Cargando Easynglish">
+  <div class="sp-logo">En</div>
+  <div class="sp-brand">Easy<span>nglish</span></div>
+  <div class="sp-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+</div>
 <div class="blob" style="width:420px;height:420px;left:-120px;top:-100px;background:#FFB8D2"></div>
 <div class="blob" style="width:400px;height:400px;right:-120px;top:200px;background:#D9CCFF"></div>
 <div class="blob" style="width:380px;height:380px;left:20%;bottom:-120px;background:#FFD9BF"></div>
@@ -449,7 +468,20 @@ const GROUP_LABEL = { todas: "Todas", verbo: "Verbos", sustantivo: "Sustantivos"
 const GROUP_COLOR = { verbo: ["#EDE7FF", "#4B2FD0"], sustantivo: ["#FFE8D6", "#9A3D00"], adjetivo: ["#D6F5EA", "#0B6B58"], otro: ["#FFE1EA", "#B01A48"] };
 
 /* ---------- navegación entre pantallas ---------- */
+// La pantalla de carga se oculta cuando ya sabemos a dónde ir, con un mínimo para que se vea la animación.
+function hideSplash() {
+  const s = $("splash");
+  if (!s || s.classList.contains("out")) return;
+  const wait = Math.max(0, 1400 - performance.now());
+  setTimeout(() => {
+    s.classList.add("out");
+    setTimeout(() => s.remove(), 600);
+  }, wait);
+}
+setTimeout(hideSplash, 8000); // por si la sesión tarda demasiado
+
 function show(id) {
+  hideSplash();
   if (id === "sLevel") $("lvlBack").dataset.go = levelFrom === "profile" ? "appView" : "sWelcome";
   SCREENS.forEach((s) => $(s).classList.toggle("on", s === id));
   const inApp = id === "appView";
