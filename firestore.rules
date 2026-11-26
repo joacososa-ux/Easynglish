@@ -7,11 +7,16 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
 
+    // Progreso de estudio: solo el dueño
+    match /users/{uid}/study/{doc} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
     // Perfil: solo el dueño
     match /users/{uid} {
       allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['username', 'email', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['username', 'email', 'createdAt', 'level'])
         && request.resource.data.username is string;
     }
 
