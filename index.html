@@ -6,6 +6,7 @@
 <title>Easynglish</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#E0245E">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -316,5 +317,6 @@ function renderList() {
   }));
 }
 </script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
 </body>
 </html>
