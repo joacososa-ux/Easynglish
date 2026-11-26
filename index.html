@@ -288,6 +288,11 @@ function say(text, rate) {
   const r = $("result");
   const u = new SpeechSynthesisUtterance(text);
   u.lang = accent;
+  const voices = speechSynthesis.getVoices();
+  const pick = voices.find(v => v.lang === accent)
+    || voices.find(v => v.lang.replace("_", "-").toLowerCase() === accent.toLowerCase())
+    || voices.find(v => v.lang.startsWith("en"));
+  if (pick) u.voice = pick;
   u.rate = rate;
   r.classList.add("playing");
   u.onend = () => r.classList.remove("playing");
