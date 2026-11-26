@@ -329,6 +329,7 @@ mark{background:rgba(255,255,255,.9);color:var(--ink);padding:0 5px;border-radiu
       </div>
     </div>
     <article id="result" class="card hidden" aria-live="polite"></article>
+    <section id="recent" style="display:flex;flex-direction:column;gap:12px"></section>
   </div>
 
   <!-- DICCIONARIO (izquierda) -->
@@ -467,6 +468,7 @@ function showTab(t) {
   document.querySelectorAll("[data-tab]").forEach((b) => b.classList.toggle("on", b.dataset.tab === t));
   document.querySelectorAll(".fab").forEach((b) => b.classList.toggle("on", b.dataset.tab === t));
   if (t === "dict") renderDict();
+  if (t === "search") renderRecent();
   if (t === "study") renderStudy();
   window.scrollTo({ top: 0 });
 }
@@ -759,6 +761,7 @@ function listen() {
   unsubscribe = onSnapshot(q, (snap) => {
     words = snap.docs.map((d) => d.data());
     renderDict();
+    renderRecent();
     $("pWords").textContent = words.length;
   }, (err) => status("Error al leer tu diccionario: " + err.code));
 }
@@ -784,7 +787,33 @@ function renderDict() {
   }).join("");
 }
 
+/* ---------- pantalla de búsqueda: recientes y sugerencias ---------- */
+const SUGGESTIONS = ["thrive", "reluctant", "tongue", "grab"];
+function renderRecent() {
+  const box = $("recent");
+  if (!box) return;
+  if (!words.length) {
+    box.innerHTML = '<div class="card" style="display:flex;flex-direction:column;gap:12px">' +
+      '<div class="lbl">Empezá por acá</div>' +
+      '<div style="font-family:Fredoka,system-ui;font-size:22px;font-weight:600">Buscá tu primera palabra</div>' +
+      '<p class="sub" style="margin:0">Tocá una sugerencia o escribí la tuya. Cada palabra que guardes aparece acá.</p>' +
+      '<div class="chips">' + SUGGESTIONS.map((w) => '<button data-sugg="' + w + '">' + w + '</button>').join("") + '</div></div>';
+    return;
+  }
+  const recent = words.slice(0, 5);
+  box.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px">' +
+    '<h2 style="font-size:22px">Guardadas recientemente</h2>' +
+    '<button class="lnk-inline" data-goto="dict" style="color:var(--pink);font-weight:800;background:none;padding:0">Ver todas</button></div>' +
+    recent.map((w, i) => '<button class="item" data-key="' + esc(w.word) + '" style="animation-delay:' + i * 50 + 'ms;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:14px 16px;border-radius:22px;background:#fff;color:var(--ink);box-shadow:0 6px 18px rgba(224,36,94,.08)">' +
+      '<span style="font-family:Fredoka,system-ui;font-size:19px;font-weight:600">' + esc(w.word) + '</span>' +
+      '<span style="font-size:14px;font-weight:700;color:var(--muted);text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(w.es) + '</span></button>').join("");
+}
+
 document.addEventListener("click", (e) => {
+  const sg = e.target.closest("[data-sugg]");
+  if (sg) { $("word").value = sg.dataset.sugg; $("searchForm").requestSubmit(); return; }
+  const gt = e.target.closest("[data-goto]");
+  if (gt) { showTab(gt.dataset.goto); return; }
   const f = e.target.closest("[data-filter]");
   if (f) { dictFilter = f.dataset.filter; renderDict(); return; }
   const k = e.target.closest("[data-key]");
