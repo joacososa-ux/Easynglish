@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Easynglish</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#E0245E">
@@ -10,41 +10,119 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--pink:#E0245E;--ink:#2B1636;--muted:#5E4767;--violet:#6D4AFF;--bg:#FFF1F5}
+:root{--pink:#E0245E;--pink2:#F472B6;--ink:#2B1636;--muted:#5E4767;--violet:#4B2FD0;--ok:#16a36a;--bad:#d62b52;--line:rgba(224,36,94,.16);--bg:#FFF1F5;--spring:cubic-bezier(.34,1.56,.64,1);--out:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box}
 body{margin:0;font-family:Nunito,system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;position:relative;overflow-x:hidden}
 .blob{position:fixed;border-radius:50%;filter:blur(70px);z-index:0;pointer-events:none;opacity:.7}
-main{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:24px 20px 80px;display:flex;flex-direction:column;gap:24px}
+main{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:20px 18px 80px;display:flex;flex-direction:column;gap:24px}
 h1,h2,h3{font-family:Fredoka,system-ui,sans-serif;margin:0}
 button{font-family:inherit;cursor:pointer;border:0}
 button:focus-visible,input:focus-visible{outline:3px solid var(--violet);outline-offset:3px}
-.btn{min-height:52px;padding:0 24px;border-radius:999px;font-weight:800;font-size:16px;background:var(--pink);color:#fff;box-shadow:0 10px 24px rgba(224,36,94,.35);transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
-.btn:hover{transform:translateY(-2px)}
-.btn:active{transform:scale(.95)}
-.btn.alt{background:#EDE7FF;color:#4B2FD0;box-shadow:none}
-.btn:disabled{opacity:.5;cursor:default;transform:none}
-.card{background:rgba(255,255,255,.85);border-radius:32px;padding:24px;box-shadow:0 20px 50px rgba(224,36,94,.14)}
+.btn{min-height:50px;padding:0 22px;border-radius:999px;font-weight:800;font-size:16px;background:var(--pink);color:#fff;box-shadow:0 10px 24px rgba(224,36,94,.35);transition:transform .25s var(--spring),opacity .3s;display:inline-flex;align-items:center;justify-content:center;gap:10px;text-align:center}
+.btn:active:not(:disabled){transform:scale(.95)}
+.btn.alt{background:#EDE7FF;color:var(--violet);box-shadow:none}
+.btn.g{background:#fff;color:#1f1f1f;border:1px solid var(--line);box-shadow:0 6px 16px rgba(224,36,94,.08)}
+.btn.danger{background:#fff;color:var(--bad);border:1.5px solid rgba(214,43,82,.3);box-shadow:none}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn.block{width:100%}
+.lnk{color:var(--pink);font-weight:800;font-size:14px;padding:8px 4px;background:none}
+.card{background:rgba(255,255,255,.88);border-radius:30px;padding:22px;box-shadow:0 20px 50px rgba(224,36,94,.14)}
 .field{display:flex;gap:8px;align-items:center;background:#fff;border-radius:999px;padding:8px;box-shadow:0 16px 36px rgba(224,36,94,.14)}
-.field input{flex:1;min-width:0;height:52px;border:0;outline:0;background:transparent;font:700 18px Nunito,system-ui;padding:0 16px;color:var(--ink)}
+.field input{flex:1;min-width:0;height:50px;border:0;outline:0;background:transparent;font:700 18px Nunito,system-ui;padding:0 16px;color:var(--ink)}
 .seg{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.85);border-radius:999px;width:max-content}
-.seg button{min-height:44px;min-width:60px;padding:0 16px;border-radius:999px;background:transparent;font-weight:800;font-size:15px;color:var(--ink)}
+.seg button{min-height:40px;min-width:56px;padding:0 14px;border-radius:999px;background:transparent;font-weight:800;font-size:15px;color:var(--ink)}
 .seg button[aria-pressed=true]{background:var(--pink);color:#fff}
 .pill{display:inline-block;padding:5px 14px;border-radius:999px;font-weight:800;font-size:13px}
 .box{border-radius:22px;padding:18px 20px;display:flex;flex-direction:column;gap:6px}
 .ex{border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:10px}
 mark{background:rgba(255,255,255,.9);color:var(--ink);padding:0 5px;border-radius:8px;font-weight:800}
 .words{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:12px}
-.word{text-align:left;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-height:44px;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.word{text-align:left;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:4px;color:var(--ink);min-height:44px;transition:transform .3s var(--out)}
 .word:hover{transform:translateY(-4px)}
 .msg{font-weight:700;color:var(--muted);text-align:center}
 .hidden{display:none !important}
 @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-.rise{animation:rise .6s cubic-bezier(.22,1,.36,1) both}
+.rise{animation:rise .6s var(--out) both}
 @keyframes wave{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
 .bars span{display:inline-block;width:6px;height:28px;border-radius:3px;margin:0 2px;background:var(--pink);transform-origin:center;opacity:.35}
 .playing .bars span{opacity:1;animation:wave .7s ease-in-out infinite}
 .playing .bars span:nth-child(2){animation-delay:.1s}.playing .bars span:nth-child(3){animation-delay:.2s}.playing .bars span:nth-child(4){animation-delay:.3s}
-@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+
+/* pantallas de acceso y perfil */
+.screen{display:none;flex-direction:column;gap:16px}
+.screen.on{display:flex}
+.screen.on>*{animation:rise .6s var(--out) both}
+.screen.on>*:nth-child(2){animation-delay:.07s}.screen.on>*:nth-child(3){animation-delay:.14s}.screen.on>*:nth-child(4){animation-delay:.21s}
+.back{align-self:flex-start;color:var(--muted);font-weight:800;font-size:14px;background:none;padding:6px 4px}
+.title{font-size:30px;line-height:1.1}
+.sub{margin:0;color:var(--muted);font-size:15px;line-height:1.45;font-weight:600}
+.lbl{font-weight:800;font-size:13px;color:var(--muted);margin:0 0 6px 4px;display:block}
+.inp{width:100%;height:54px;border-radius:18px;border:1.5px solid var(--line);background:#fff;padding:0 16px;font:700 16px Nunito,system-ui;color:var(--ink);outline:0;transition:border-color .25s,box-shadow .25s}
+.inp:focus{border-color:var(--pink);box-shadow:0 0 0 4px rgba(224,36,94,.12)}
+.inp.bad{border-color:var(--bad)}
+.inprow{position:relative}
+.inprow .inp{padding-right:64px}
+.eye{position:absolute;right:6px;top:7px;height:40px;padding:0 10px;border-radius:12px;color:var(--muted);font-size:13px;font-weight:800;background:none}
+.hint{font-size:13px;color:var(--muted);margin:6px 4px 0;min-height:18px;font-weight:600}
+.hint.bad{color:var(--bad)}.hint.ok{color:var(--ok)}
+.meter{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px}
+.meter i{height:6px;border-radius:4px;background:#f3d6e0;transition:background .35s}
+.meter[data-s="1"] i:nth-child(-n+1){background:var(--bad)}
+.meter[data-s="2"] i:nth-child(-n+2){background:#F59E0B}
+.meter[data-s="3"] i:nth-child(-n+3){background:#A3D65C}
+.meter[data-s="4"] i{background:var(--ok)}
+.rules{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px;font-size:13.5px;color:var(--muted);font-weight:700}
+.rules li{display:flex;align-items:center;gap:9px;transition:color .3s}
+.dot{width:20px;height:20px;border-radius:50%;border:1.5px solid #e7bccb;display:grid;place-items:center;transition:background .3s,border-color .3s,transform .4s var(--spring);flex:none}
+.dot svg{width:12px;height:12px;fill:none;stroke:#fff;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .2s}
+.rules li.ok{color:var(--ok)}
+.rules li.ok .dot{background:var(--ok);border-color:var(--ok);transform:scale(1.1)}
+.rules li.ok .dot svg{opacity:1}
+.msgerr{font-size:14px;color:var(--bad);min-height:18px;margin:0;font-weight:700;text-align:center}
+.msgok{color:var(--ok)}
+.sep{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin:4px 0;font-weight:800}
+.sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
+.welcome{align-items:center;text-align:center;gap:14px}
+.logo{width:64px;height:64px;border-radius:20px;background:linear-gradient(160deg,#F472B6,#E0245E 70%,#FB923C);display:grid;place-items:center;color:#fff;font:600 30px Fredoka,sans-serif;box-shadow:0 14px 30px rgba(224,36,94,.35)}
+.welcome h1{font-size:30px;line-height:1.1}
+.welcome .sub{text-align:center}
+.welcome .acts{width:100%;display:grid;gap:10px;margin-top:6px}
+
+/* nombre de usuario */
+.av{width:84px;height:84px;border-radius:50%;margin:4px auto 0;display:grid;place-items:center;font:600 36px Fredoka,sans-serif;color:#fff;background:linear-gradient(135deg,#F472B6,#E0245E);box-shadow:0 14px 34px rgba(224,36,94,.35);flex:none}
+.av.empty{background:#fdeef4;color:var(--muted);box-shadow:none}
+.nbox{display:flex;align-items:center;border-radius:20px;padding:0 14px 0 18px;border:2px solid var(--line);background:#fff;transition:border-color .3s,box-shadow .3s}
+.nbox:focus-within{border-color:var(--pink);box-shadow:0 0 0 5px rgba(224,36,94,.12)}
+.nbox.ok{border-color:var(--ok)}
+.nbox.bad{border-color:var(--bad)}
+.nbox .at{font:600 26px Fredoka,sans-serif;color:var(--muted)}
+.nbox input{flex:1;min-width:0;background:none;border:0;outline:0;height:60px;padding:0 8px;font:600 26px Fredoka,sans-serif;color:var(--ink)}
+.nst{font-weight:800;font-size:18px;min-width:20px;text-align:center}
+.nst.ok{color:var(--ok)}.nst.bad{color:var(--bad)}
+.status{margin:4px 4px 0;min-height:20px;font-size:14px;color:var(--muted);font-weight:700}
+.status.ok{color:var(--ok)}.status.bad{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{padding:9px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);font-weight:800;font-size:14px}
+
+/* perfil */
+.prof{align-items:center;text-align:center}
+.prof .name{font-size:26px}
+.prof .mail{margin:0;color:var(--muted);font-size:14px;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%}
+.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 8px;text-align:center}
+.stat b{display:block;font:600 24px Fredoka,sans-serif;color:var(--pink)}
+.stat span{font-size:12px;color:var(--muted);font-weight:800}
+.sect{width:100%;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;text-align:left}
+.sect h3{font:600 13px Nunito,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:0;padding:14px 16px 6px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-top:1px solid #fbe3ec;min-height:56px;font-weight:800}
+.row small{display:block;color:var(--muted);font-size:12.5px;font-weight:600}
+.row>div{flex:1;min-width:0}
+.row .seg{flex:none}
+.cfm{display:none;width:100%;gap:8px;flex-direction:column}
+.cfm.on{display:flex}
+
+/* búsqueda */
+.dummy{display:none}
 </style>
 </head>
 <body>
@@ -53,24 +131,81 @@ mark{background:rgba(255,255,255,.9);color:var(--ink);padding:0 5px;border-radiu
 <div class="blob" style="width:380px;height:380px;left:20%;bottom:-120px;background:#FFD9BF"></div>
 
 <main>
-<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-  <h2 style="font-size:28px">Easy<span style="color:var(--pink)">nglish</span></h2>
-  <div id="userbox" class="hidden" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-    <span id="uname" style="font-weight:700;color:var(--muted);font-size:14px"></span>
-    <button class="btn alt" id="logout" style="min-height:44px;padding:0 16px;font-size:14px">Salir</button>
-  </div>
+<header style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+  <h2 style="font-size:26px">Easy<span style="color:var(--pink)">nglish</span></h2>
+  <button id="avatarBtn" class="hidden" aria-label="Mi perfil" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#F472B6,#E0245E);color:#fff;font:600 20px Fredoka,sans-serif;box-shadow:0 8px 20px rgba(224,36,94,.35)"></button>
 </header>
 
-<section id="loginView" class="card rise" style="text-align:center;display:flex;flex-direction:column;gap:18px;align-items:center">
-  <h1 style="font-size:40px;line-height:1.1">Tu diccionario de inglés, siempre contigo</h1>
-  <p class="msg" style="margin:0;font-size:17px">Iniciá sesión con Google para guardar tus palabras y sincronizarlas entre dispositivos.</p>
-  <button class="btn" id="login">Entrar con Google</button>
-  <p id="loginStatus" class="msg" style="font-size:15px"></p>
+<!-- BIENVENIDA -->
+<section id="sWelcome" class="screen card welcome on">
+  <div class="logo">En</div>
+  <h1>Tu diccionario de inglés, siempre contigo</h1>
+  <p class="sub">Guardá cada palabra nueva con su significado, ejemplos y pronunciación. Todo sincronizado.</p>
+  <div class="acts">
+    <button class="btn block" data-go="sLogin">Iniciar sesión</button>
+    <button class="btn alt block" data-go="sSignup">Crear cuenta</button>
+    <div class="sep">o</div>
+    <button class="btn g block" id="gbtn"><svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.5l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 0 1 0-9.4l-7.9-6.1a24 24 0 0 0 0 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>Continuar con Google</button>
+  </div>
+  <p id="welcomeMsg" class="msgerr"></p>
 </section>
 
-<section id="appView" class="hidden" style="display:flex;flex-direction:column;gap:24px">
+<!-- ENTRAR -->
+<section id="sLogin" class="screen card">
+  <button class="back" data-go="sWelcome">‹ Volver</button>
+  <h2 class="title">Qué bueno verte</h2>
+  <p class="sub">Entrá con tu correo y contraseña.</p>
+  <form id="fLogin" novalidate style="display:flex;flex-direction:column;gap:14px">
+    <div><label class="lbl" for="lEmail">Correo electrónico</label><input id="lEmail" class="inp" type="email" autocomplete="email" required></div>
+    <div><label class="lbl" for="lPass">Contraseña</label><div class="inprow"><input id="lPass" class="inp" type="password" autocomplete="current-password" required><button type="button" class="eye" data-eye="lPass">Ver</button></div></div>
+    <p id="lMsg" class="msgerr"></p>
+    <button class="btn block" type="submit">Entrar</button>
+    <button type="button" class="lnk" id="forgot" style="align-self:center">¿Olvidaste la contraseña?</button>
+  </form>
+  <p class="sub" style="text-align:center">¿No tenés cuenta? <button class="lnk" data-go="sSignup" style="padding:0">Registrate</button></p>
+</section>
+
+<!-- REGISTRO -->
+<section id="sSignup" class="screen card">
+  <button class="back" data-go="sWelcome">‹ Volver</button>
+  <h2 class="title">Creá tu cuenta</h2>
+  <p class="sub">Usá una contraseña que no uses en otro lado.</p>
+  <form id="fSignup" novalidate style="display:flex;flex-direction:column;gap:14px">
+    <div><label class="lbl" for="sEmail">Correo electrónico</label><input id="sEmail" class="inp" type="email" autocomplete="email" required></div>
+    <div>
+      <label class="lbl" for="sPass">Contraseña</label>
+      <div class="inprow"><input id="sPass" class="inp" type="password" autocomplete="new-password" required><button type="button" class="eye" data-eye="sPass">Ver</button></div>
+      <div class="meter" id="meter" data-s="0"><i></i><i></i><i></i><i></i></div>
+      <ul class="rules">
+        <li data-r="len"><span class="dot"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>Al menos 10 caracteres</li>
+        <li data-r="mix"><span class="dot"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>Mayúsculas, minúsculas y un número</li>
+      </ul>
+    </div>
+    <div><label class="lbl" for="sPass2">Repetí la contraseña</label><input id="sPass2" class="inp" type="password" autocomplete="new-password" required><div class="hint" id="sPass2h"></div></div>
+    <p id="sMsg" class="msgerr"></p>
+    <button class="btn block" id="sBtn" type="submit" disabled>Crear cuenta</button>
+  </form>
+  <p class="sub" style="text-align:center;font-size:13px">Te mandamos un correo para confirmar tu dirección.</p>
+</section>
+
+<!-- NOMBRE DE USUARIO -->
+<section id="sName" class="screen card">
+  <div class="av empty" id="nAv">?</div>
+  <h2 class="title" style="text-align:center">¿Cómo te llamamos?</h2>
+  <p class="sub" style="text-align:center">Es el nombre que ven los demás cuando comparten palabras.</p>
+  <div>
+    <div class="nbox" id="nBox"><span class="at">@</span><input id="nIn" type="text" maxlength="20" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="tu_nombre"><span class="nst" id="nSt"></span></div>
+    <div class="status" id="nStat">De 3 a 20 letras, números o guion bajo.</div>
+    <div class="chips" id="nSugg" style="margin-top:10px" hidden></div>
+  </div>
+  <p id="nMsg" class="msgerr"></p>
+  <button class="btn block" id="nBtn" disabled>Continuar</button>
+</section>
+
+<!-- APP: BÚSQUEDA Y DICCIONARIO -->
+<section id="appView" class="screen" style="gap:24px">
   <div style="display:flex;flex-direction:column;gap:14px">
-    <h1 style="font-size:34px">¿Qué palabra nueva viste?</h1>
+    <h1 style="font-size:32px">¿Qué palabra nueva viste?</h1>
     <form id="searchForm" class="field" autocomplete="off">
       <label for="word" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Palabra en inglés</label>
       <input id="word" placeholder="Escribí una palabra, por ejemplo: thrive" maxlength="60" required>
@@ -90,19 +225,51 @@ mark{background:rgba(255,255,255,.9);color:var(--ink);padding:0 5px;border-radiu
 
   <section style="display:flex;flex-direction:column;gap:14px">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-      <h2 style="font-size:28px">Tu diccionario</h2>
+      <h2 style="font-size:26px">Tu diccionario</h2>
       <span id="count" class="pill" style="background:#FFC2D8"></span>
     </div>
     <div id="list" class="words"></div>
     <p id="empty" class="msg hidden">Todavía no guardaste palabras. Buscá una arriba y tocá "Guardar".</p>
   </section>
 </section>
+
+<!-- PERFIL -->
+<section id="sProfile" class="screen card prof">
+  <button class="back" style="align-self:flex-start" data-go="appView">‹ Volver</button>
+  <div class="av" id="pAv">?</div>
+  <div>
+    <h2 class="name" id="pName">@</h2>
+    <p class="mail" id="pMail"></p>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="pWords">0</b><span>palabras guardadas</span></div>
+    <div class="stat"><b id="pAcc">US</b><span>acento preferido</span></div>
+  </div>
+  <div class="sect">
+    <h3>Preferencias</h3>
+    <div class="row"><div>Acento<small>Para escuchar las palabras</small></div>
+      <div class="seg" id="pSeg"><button type="button" data-pa="en-US">US</button><button type="button" data-pa="en-GB">UK</button><button type="button" data-pa="en-AU">AU</button></div></div>
+  </div>
+  <div class="sect">
+    <h3>Cuenta</h3>
+    <div class="row"><div>Correo<small id="pMail2"></small></div></div>
+    <div class="row"><div>Contraseña<small>Te enviamos un enlace para cambiarla</small></div><button class="lnk" id="pReset">Enviar</button></div>
+  </div>
+  <p id="pMsg" class="msgerr"></p>
+  <button class="btn alt block" id="logout">Cerrar sesión</button>
+  <button class="btn danger block" id="delBtn">Eliminar cuenta</button>
+  <div class="cfm" id="delCfm">
+    <p class="sub" style="text-align:center;font-size:14px">Se borran tus palabras y tu perfil. No se puede deshacer.</p>
+    <button class="btn danger block" id="delOk">Sí, eliminar</button>
+    <button class="btn g block" id="delNo">Cancelar</button>
+  </div>
+</section>
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, deleteUser, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, runTransaction, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDsDBW2kgTFN93f37mdlxkeQiL5iAB2siI",
@@ -120,6 +287,7 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 let user = null;
+let profile = null;     // { username, email } o null si todavía no eligió nombre
 let unsubscribe = null;
 let words = [];
 let accent = localStorage.getItem("accent") || "en-US";
@@ -129,40 +297,236 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const COLORS = ["#FFE1EA", "#EDE7FF", "#FFE8D6", "#D6F5EA", "#FFF3C4"];
 const CTX = { formal: ["FORMAL", "#EDE7FF", "#4B2FD0"], casual: ["COTIDIANO", "#FFE8D6", "#9A3D00"], work: ["TRABAJO", "#D6F5EA", "#0B6B58"] };
+const SCREENS = ["sWelcome", "sLogin", "sSignup", "sName", "appView", "sProfile"];
 
-document.querySelectorAll("[data-acc]").forEach((b) => {
-  b.setAttribute("aria-pressed", String(b.dataset.acc === accent));
-  b.addEventListener("click", () => {
-    accent = b.dataset.acc;
-    localStorage.setItem("accent", accent);
-    document.querySelectorAll("[data-acc]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.acc === accent)));
-    if (current) renderCard(current.entry, current.saved);
-  });
+/* ---------- navegación entre pantallas ---------- */
+function show(id) {
+  SCREENS.forEach((s) => $(s).classList.toggle("on", s === id));
+  window.scrollTo({ top: 0 });
+  const focus = { sLogin: "lEmail", sSignup: "sEmail", sName: "nIn" }[id];
+  if (focus) setTimeout(() => $(focus).focus({ preventScroll: true }), 450);
+}
+document.addEventListener("click", (e) => {
+  const g = e.target.closest("[data-go]");
+  if (g) show(g.dataset.go);
+  const ey = e.target.closest("[data-eye]");
+  if (ey) { const i = $(ey.dataset.eye); const v = i.type === "password"; i.type = v ? "text" : "password"; ey.textContent = v ? "Ocultar" : "Ver"; }
 });
 
-$("login").addEventListener("click", () => {
-  $("loginStatus").textContent = "";
-  signInWithPopup(auth, provider).catch((e) => { $("loginStatus").textContent = "No se pudo iniciar sesión (" + e.code + ")."; });
+/* ---------- acento ---------- */
+function setAccent(a) {
+  accent = a;
+  localStorage.setItem("accent", a);
+  document.querySelectorAll("[data-acc]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.acc === a)));
+  document.querySelectorAll("[data-pa]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.pa === a)));
+  $("pAcc").textContent = a.slice(3);
+  if (current) renderCard(current.entry, current.saved);
+}
+document.querySelectorAll("[data-acc]").forEach((b) => b.addEventListener("click", () => setAccent(b.dataset.acc)));
+document.querySelectorAll("[data-pa]").forEach((b) => b.addEventListener("click", () => setAccent(b.dataset.pa)));
+document.querySelectorAll("[data-acc],[data-pa]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.acc === accent || b.dataset.pa === accent)));
+
+/* ---------- errores de Firebase en español ---------- */
+function authMsg(code) {
+  const m = {
+    "auth/invalid-email": "Revisá el correo.",
+    "auth/missing-password": "Ingresá tu contraseña.",
+    "auth/invalid-credential": "Correo o contraseña incorrectos.",
+    "auth/wrong-password": "Correo o contraseña incorrectos.",
+    "auth/user-not-found": "Correo o contraseña incorrectos.",
+    "auth/email-already-in-use": "Ya existe una cuenta con ese correo.",
+    "auth/weak-password": "La contraseña es muy débil.",
+    "auth/too-many-requests": "Demasiados intentos. Probá más tarde.",
+    "auth/network-request-failed": "Sin conexión. Revisá tu internet.",
+    "auth/requires-recent-login": "Por seguridad, volvé a iniciar sesión y probá de nuevo."
+  };
+  return m[code] || "No se pudo completar (" + code + ").";
+}
+
+/* ---------- entrar ---------- */
+$("gbtn").addEventListener("click", () => {
+  $("welcomeMsg").textContent = "";
+  signInWithPopup(auth, provider).catch((e) => { $("welcomeMsg").textContent = authMsg(e.code); });
 });
-$("logout").addEventListener("click", () => signOut(auth));
 
-function status(text) { $("status").textContent = text || ""; }
+$("fLogin").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = $("lEmail").value.trim(), pass = $("lPass").value;
+  $("lMsg").textContent = "";
+  if (!/^\S+@\S+\.\S+$/.test(email)) { $("lMsg").textContent = "Revisá el correo."; return; }
+  if (!pass) { $("lMsg").textContent = "Ingresá tu contraseña."; return; }
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch (err) { $("lMsg").textContent = authMsg(err.code); }
+});
 
-onAuthStateChanged(auth, (u) => {
-  user = u;
-  $("loginView").classList.toggle("hidden", !!u);
-  $("appView").classList.toggle("hidden", !u);
-  $("userbox").classList.toggle("hidden", !u);
-  if (u) {
-    $("uname").textContent = u.displayName || u.email || "";
-    listen();
-  } else {
-    if (unsubscribe) unsubscribe();
-    words = [];
-    renderList();
+$("forgot").addEventListener("click", async () => {
+  const email = $("lEmail").value.trim();
+  if (!/^\S+@\S+\.\S+$/.test(email)) { $("lMsg").textContent = "Escribí tu correo arriba y tocá de nuevo."; return; }
+  try { await sendPasswordResetEmail(auth, email); $("lMsg").className = "msgerr msgok"; $("lMsg").textContent = "Te enviamos un enlace para cambiarla."; }
+  catch (err) { $("lMsg").textContent = authMsg(err.code); }
+});
+
+/* ---------- registro ---------- */
+function strength(pw) {
+  let s = 0; if (pw.length >= 10) s++; if (/[a-z]/.test(pw) && /[A-Z]/.test(pw) && /\d/.test(pw)) s++; if (pw.length >= 14) s++; if (/[^A-Za-z0-9]/.test(pw)) s++;
+  return Math.min(s, 4);
+}
+function checkSignup() {
+  const pw = $("sPass").value, pw2 = $("sPass2").value, email = $("sEmail").value.trim();
+  const lenOk = pw.length >= 10, mixOk = /[a-z]/.test(pw) && /[A-Z]/.test(pw) && /\d/.test(pw);
+  document.querySelectorAll(".rules li")[0].classList.toggle("ok", lenOk);
+  document.querySelectorAll(".rules li")[1].classList.toggle("ok", mixOk);
+  $("meter").dataset.s = pw ? Math.max(1, strength(pw)) : 0;
+  const h = $("sPass2h");
+  if (!pw2) { h.textContent = ""; h.className = "hint"; }
+  else if (pw2 === pw) { h.textContent = "Coinciden"; h.className = "hint ok"; }
+  else { h.textContent = "No coinciden todavía"; h.className = "hint bad"; }
+  $("sBtn").disabled = !(/^\S+@\S+\.\S+$/.test(email) && lenOk && mixOk && pw === pw2);
+}
+["sEmail", "sPass", "sPass2"].forEach((id) => $(id).addEventListener("input", checkSignup));
+
+$("fSignup").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("sMsg").textContent = "";
+  $("sBtn").disabled = true;
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, $("sEmail").value.trim(), $("sPass").value);
+    sendEmailVerification(cred.user).catch(() => {});
+    // onAuthStateChanged lleva al paso de nombre de usuario
+  } catch (err) {
+    $("sMsg").textContent = authMsg(err.code);
+    checkSignup();
   }
 });
 
+/* ---------- nombre de usuario ---------- */
+const TAKEN_CHECK = { t: null, last: "" };
+function setNameState(state, text) {
+  const box = $("nBox"), st = $("nSt"), stat = $("nStat");
+  box.classList.toggle("ok", state === "ok");
+  box.classList.toggle("bad", state === "bad");
+  st.textContent = state === "ok" ? "✓" : state === "bad" ? "✕" : "";
+  st.className = "nst " + (state || "");
+  stat.textContent = text;
+  stat.className = "status " + (state === "ok" ? "ok" : state === "bad" ? "bad" : "");
+}
+function suggest(base) {
+  const opts = [base + "_ing", base + ".en", base + "2026"].slice(0, 3);
+  const box = $("nSugg");
+  box.innerHTML = "";
+  opts.forEach((o) => {
+    const b = document.createElement("button");
+    b.textContent = "@" + o;
+    b.onclick = () => { $("nIn").value = o; $("nIn").dispatchEvent(new Event("input")); };
+    box.appendChild(b);
+  });
+  box.hidden = false;
+}
+$("nIn").addEventListener("input", () => {
+  const v = $("nIn").value.toLowerCase().replace(/\s/g, "");
+  $("nIn").value = v;
+  clearTimeout(TAKEN_CHECK.t);
+  $("nBtn").disabled = true;
+  $("nSugg").hidden = true;
+  $("nMsg").textContent = "";
+  $("nAv").textContent = v ? v[0].toUpperCase() : "?";
+  $("nAv").classList.toggle("empty", !v);
+  if (!v) { setNameState("", "De 3 a 20 letras, números o guion bajo."); return; }
+  if (!/^[a-z0-9_]{3,20}$/.test(v)) { setNameState("bad", "Usá solo letras, números o guion bajo (mínimo 3)."); return; }
+  setNameState("", "Revisando…");
+  TAKEN_CHECK.t = setTimeout(async () => {
+    try {
+      const snap = await getDoc(doc(db, "usernames", v));
+      if ($("nIn").value !== v) return;
+      if (snap.exists()) { setNameState("bad", "@" + v + " ya está en uso."); suggest(v); return; }
+      setNameState("ok", "¡Disponible!");
+      TAKEN_CHECK.last = v;
+      $("nBtn").disabled = false;
+    } catch (err) {
+      setNameState("bad", "No pudimos revisar el nombre (" + err.code + ").");
+    }
+  }, 450);
+});
+
+$("nBtn").addEventListener("click", async () => {
+  const name = TAKEN_CHECK.last;
+  if (!name || !user) return;
+  $("nBtn").disabled = true;
+  $("nMsg").textContent = "";
+  try {
+    await runTransaction(db, async (tx) => {
+      const ref = doc(db, "usernames", name);
+      const s = await tx.get(ref);
+      if (s.exists()) throw new Error("taken");
+      tx.set(ref, { uid: user.uid });
+      tx.set(doc(db, "users", user.uid), { username: name, email: user.email || "", createdAt: serverTimestamp() });
+    });
+    profile = { username: name, email: user.email || "" };
+    enterApp();
+  } catch (err) {
+    $("nMsg").textContent = err.message === "taken" ? "Ese nombre se acaba de ocupar. Elegí otro." : "No se pudo guardar el nombre (" + (err.code || err.message) + ").";
+    $("nBtn").disabled = false;
+  }
+});
+
+/* ---------- sesión ---------- */
+onAuthStateChanged(auth, async (u) => {
+  user = u;
+  profile = null;
+  if (!u) {
+    if (unsubscribe) unsubscribe();
+    words = [];
+    $("avatarBtn").classList.add("hidden");
+    renderList();
+    show("sWelcome");
+    return;
+  }
+  try {
+    const snap = await getDoc(doc(db, "users", u.uid));
+    profile = snap.exists() ? snap.data() : null;
+  } catch (e) { profile = null; }
+  if (!profile || !profile.username) { show("sName"); $("nAv").textContent = "?"; return; }
+  enterApp();
+});
+
+function enterApp() {
+  const name = profile.username;
+  $("avatarBtn").textContent = name[0].toUpperCase();
+  $("avatarBtn").classList.remove("hidden");
+  $("pAv").textContent = name[0].toUpperCase();
+  $("pName").textContent = "@" + name;
+  $("pMail").textContent = user.email || "";
+  $("pMail2").textContent = user.email || "";
+  listen();
+  show("appView");
+}
+
+$("avatarBtn").addEventListener("click", () => { $("pMsg").textContent = ""; $("pWords").textContent = words.length; show("sProfile"); });
+
+/* ---------- perfil: cerrar sesión, contraseña, eliminar ---------- */
+$("logout").addEventListener("click", () => signOut(auth));
+$("pReset").addEventListener("click", async () => {
+  try { await sendPasswordResetEmail(auth, user.email); $("pMsg").className = "msgerr msgok"; $("pMsg").textContent = "Te enviamos un enlace para cambiar la contraseña."; }
+  catch (err) { $("pMsg").className = "msgerr"; $("pMsg").textContent = authMsg(err.code); }
+});
+$("delBtn").addEventListener("click", () => $("delCfm").classList.add("on"));
+$("delNo").addEventListener("click", () => $("delCfm").classList.remove("on"));
+$("delOk").addEventListener("click", async () => {
+  $("pMsg").textContent = "";
+  try {
+    const uid = user.uid, name = profile && profile.username;
+    const snap = await getDocs(collection(db, "users", uid, "words"));
+    await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+    if (name) await deleteDoc(doc(db, "usernames", name));
+    await deleteDoc(doc(db, "users", uid));
+    await deleteUser(user);
+  } catch (err) {
+    $("pMsg").className = "msgerr";
+    $("pMsg").textContent = authMsg(err.code || "");
+  }
+});
+
+/* ---------- diccionario ---------- */
 function listen() {
   if (unsubscribe) unsubscribe();
   const q = query(collection(db, "users", user.uid, "words"), orderBy("addedAt", "desc"));
@@ -171,6 +535,8 @@ function listen() {
     renderList();
   }, (err) => status("Error al leer tu diccionario: " + err.code));
 }
+
+function status(text) { $("status").textContent = text || ""; }
 
 $("searchForm").addEventListener("submit", async (ev) => {
   ev.preventDefault();
@@ -237,7 +603,7 @@ function renderCard(entry, saved) {
     '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:flex-start">' +
     '<div style="display:flex;flex-direction:column;gap:10px">' +
     '<span class="pill" style="background:#EDE7FF;color:#4B2FD0">' + esc(entry.pos || "") + '</span>' +
-    '<h2 style="font-size:58px;line-height:1;letter-spacing:-1px">' + esc(entry.word) + '</h2>' +
+    '<h2 style="font-size:52px;line-height:1;letter-spacing:-1px">' + esc(entry.word) + '</h2>' +
     '<p style="margin:0;font-size:18px;font-weight:800;color:var(--muted)">' + esc(ipaFor(entry)) + '</p></div>' +
     '<div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">' +
     '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">' +
@@ -305,6 +671,7 @@ function renderList() {
   const list = $("list");
   $("count").textContent = words.length + (words.length === 1 ? " palabra" : " palabras");
   $("empty").classList.toggle("hidden", words.length > 0);
+  $("pWords").textContent = words.length;
   list.innerHTML = words.map((w, i) =>
     '<button class="word rise" style="background:' + COLORS[i % COLORS.length] + '" data-key="' + esc(w.word) + '">' +
     '<span style="font-family:Fredoka,system-ui;font-size:24px;line-height:1.1">' + esc(w.word) + '</span>' +

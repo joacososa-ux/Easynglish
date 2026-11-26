@@ -1,9 +1,30 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Diccionario personal: solo el dueño lee y escribe sus palabras
     match /users/{uid}/words/{word} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
+
+    // Perfil: solo el dueño
+    match /users/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['username', 'email', 'createdAt'])
+        && request.resource.data.username is string;
+    }
+
+    // Nombres de usuario: cualquiera logueado puede consultar si está libre.
+    // Solo se puede reservar a nombre propio y liberar el propio.
+    match /usernames/{name} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid']);
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
