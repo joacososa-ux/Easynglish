@@ -925,7 +925,7 @@ function renderCard(entry, saved) {
     '<span class="pill" style="background:#EDE7FF;color:#4B2FD0">' + esc(entry.pos || "") + '</span>' +
     '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
     '<h2 style="font-size:52px;line-height:1;letter-spacing:-1px">' + esc(entry.word) + '</h2>' +
-    (saved ? '<span style="font-size:14px;font-weight:800;color:#0B6B58">✓ Guardada</span>'
+    (saved ? '<span style="font-size:14px;font-weight:800;color:#0B6B58;padding:0 4px;' + (entry.justSaved ? 'animation:pop .5s var(--spring) both' : '') + '">✓ Guardada</span>'
            : '<button id="save" aria-label="Guardar en mi diccionario" style="min-height:36px;padding:0 12px;border-radius:999px;border:2px solid var(--pink);background:transparent;color:var(--pink);font-weight:800;font-size:14px;cursor:pointer">+ Guardar</button>') + '</div>' +
     '<p style="margin:0;font-size:18px;font-weight:800;color:var(--muted)">' + esc(ipaFor(entry)) + '</p></div>' +
     '<div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">' +
@@ -1012,7 +1012,9 @@ async function save(entry) {
       examples: entry.examples || [],
       addedAt: serverTimestamp()
     });
+    entry.justSaved = true; // solo animamos cuando se acaba de guardar, no al volver a abrir la ficha
     renderCard(entry, true);
+    entry.justSaved = false;
     status("Guardada en tu diccionario.");
   } catch (e) {
     status("No se pudo guardar (" + e.code + ").");
