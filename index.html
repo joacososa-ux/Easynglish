@@ -926,18 +926,18 @@ function renderCard(entry, saved) {
     '<h2 style="font-size:52px;line-height:1;letter-spacing:-1px">' + esc(entry.word) + '</h2>' +
     '<p style="margin:0;font-size:18px;font-weight:800;color:var(--muted)">' + esc(ipaFor(entry)) + '</p></div>' +
     '<div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">' +
-    '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center">' +
     '<button class="btn" id="say">Escuchar</button>' +
-    '<button class="btn alt" id="sayslow">Más lento</button></div></div></div>' +
-    '<div class="bars" aria-hidden="true" style="display:flex;justify-content:center;align-items:center;height:28px;margin:-6px 0"><span></span><span></span><span></span><span></span><span></span></div>' +
+    '<button class="btn alt" id="sayslow">Más lento</button>' +
+    '<div class="bars" aria-hidden="true" style="display:flex;align-items:center;height:28px;margin-left:4px"><span></span><span></span><span></span><span></span><span></span></div></div></div></div>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:12px">' +
     '<div class="box" style="background:#FFE9F0"><span style="font-weight:800;font-size:13px;color:#B01A48">EN INGLÉS</span><p style="margin:0;font-size:18px;font-weight:700;line-height:1.45">' + esc(entry.en) + '</p></div>' +
     '<div class="box" style="background:#EDE7FF"><span style="font-weight:800;font-size:13px;color:#4B2FD0">EN ESPAÑOL</span><p style="margin:0;font-size:18px;font-weight:700;line-height:1.45">' + esc(entry.es) + '</p></div></div>' +
     (entry.esLong ? '<p style="margin:0;font-size:16px;font-weight:600;color:var(--muted)">' + esc(entry.esLong) + '</p>' : '') +
     (entry.syn ? '<p style="margin:0;font-size:15px;font-weight:700;color:var(--muted)">Sinónimos: ' + esc(entry.syn) + '</p>' : '') +
-    (groupOf(entry.pos) === "verbo" ? '<div id="conjBox">' + (entry.conj ? conjHtml(entry.conj) : '<p class="sub" style="margin:0">Buscando la conjugación…</p>') + '</div>' : '') +
     '<div style="display:flex;flex-direction:column;gap:12px"><h3 style="font-size:24px">Ejemplos en contexto</h3>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px">' + examples + '</div></div>' +
+    (groupOf(entry.pos) === "verbo" ? '<div id="conjBox">' + (entry.conj ? conjHtml(entry.conj) : '<p class="sub" style="margin:0">Buscando la conjugación…</p>') + '</div>' : '') +
     '<div style="display:flex;justify-content:flex-end">' +
     (saved ? '<span class="pill" style="background:#D6F5EA;color:#0B6B58">Ya está en tu diccionario</span>'
            : '<button class="btn" id="save">Guardar en mi diccionario</button>') +
