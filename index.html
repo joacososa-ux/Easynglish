@@ -925,8 +925,8 @@ function renderCard(entry, saved) {
     '<span class="pill" style="background:#EDE7FF;color:#4B2FD0">' + esc(entry.pos || "") + '</span>' +
     '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
     '<h2 style="font-size:52px;line-height:1;letter-spacing:-1px">' + esc(entry.word) + '</h2>' +
-    (saved ? '<span class="pill" style="background:#D6F5EA;color:#0B6B58">✓ En tu diccionario</span>'
-           : '<button class="btn" id="save" style="min-height:48px">+ Guardar</button>') + '</div>' +
+    (saved ? '<span style="font-size:14px;font-weight:800;color:#0B6B58">✓ Guardada</span>'
+           : '<button id="save" aria-label="Guardar en mi diccionario" style="min-height:36px;padding:0 12px;border-radius:999px;border:2px solid var(--pink);background:transparent;color:var(--pink);font-weight:800;font-size:14px;cursor:pointer">+ Guardar</button>') + '</div>' +
     '<p style="margin:0;font-size:18px;font-weight:800;color:var(--muted)">' + esc(ipaFor(entry)) + '</p></div>' +
     '<div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">' +
     '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center">' +
