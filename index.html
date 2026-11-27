@@ -1293,6 +1293,20 @@ async function study(d) {
   }
 })();
 </script>
-<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
+<script>
+// Actualizaciones: buscamos versión nueva al volver a la app y recargamos cuando la nueva toma el control.
+if ("serviceWorker" in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (hadController && !reloading) { reloading = true; location.reload(); }
+  });
+  navigator.serviceWorker.register("sw.js").then((reg) => {
+    const check = () => { if (!document.hidden) reg.update().catch(() => {}); };
+    document.addEventListener("visibilitychange", check);
+    window.addEventListener("focus", check);
+  });
+}
+</script>
 </body>
 </html>
