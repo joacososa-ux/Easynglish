@@ -923,7 +923,10 @@ function renderCard(entry, saved) {
     '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:flex-start">' +
     '<div style="display:flex;flex-direction:column;gap:10px">' +
     '<span class="pill" style="background:#EDE7FF;color:#4B2FD0">' + esc(entry.pos || "") + '</span>' +
+    '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">' +
     '<h2 style="font-size:52px;line-height:1;letter-spacing:-1px">' + esc(entry.word) + '</h2>' +
+    (saved ? '<span class="pill" style="background:#D6F5EA;color:#0B6B58">✓ En tu diccionario</span>'
+           : '<button class="btn" id="save" style="min-height:48px">+ Guardar</button>') + '</div>' +
     '<p style="margin:0;font-size:18px;font-weight:800;color:var(--muted)">' + esc(ipaFor(entry)) + '</p></div>' +
     '<div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">' +
     '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center">' +
@@ -938,10 +941,7 @@ function renderCard(entry, saved) {
     '<div style="display:flex;flex-direction:column;gap:12px"><h3 style="font-size:24px">Ejemplos en contexto</h3>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px">' + examples + '</div></div>' +
     (groupOf(entry.pos) === "verbo" ? '<div id="conjBox">' + (entry.conj ? conjHtml(entry.conj) : '<p class="sub" style="margin:0">Buscando la conjugación…</p>') + '</div>' : '') +
-    '<div style="display:flex;justify-content:flex-end">' +
-    (saved ? '<span class="pill" style="background:#D6F5EA;color:#0B6B58">Ya está en tu diccionario</span>'
-           : '<button class="btn" id="save">Guardar en mi diccionario</button>') +
-    '</div></div>';
+    '</div>';
 
   $("say").addEventListener("click", () => say(entry.word, 0.9));
   $("sayslow").addEventListener("click", () => say(entry.word, 0.5));
