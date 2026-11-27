@@ -935,6 +935,7 @@ function renderCard(entry, saved) {
     '<div class="box" style="background:#EDE7FF"><span style="font-weight:800;font-size:13px;color:#4B2FD0">EN ESPAÑOL</span><p style="margin:0;font-size:18px;font-weight:700;line-height:1.45">' + esc(entry.es) + '</p></div></div>' +
     (entry.esLong ? '<p style="margin:0;font-size:16px;font-weight:600;color:var(--muted)">' + esc(entry.esLong) + '</p>' : '') +
     (entry.syn ? '<p style="margin:0;font-size:15px;font-weight:700;color:var(--muted)">Sinónimos: ' + esc(entry.syn) + '</p>' : '') +
+    (groupOf(entry.pos) === "verbo" ? '<div id="conjBox">' + (entry.conj ? conjHtml(entry.conj) : '<p class="sub" style="margin:0">Buscando la conjugación…</p>') + '</div>' : '') +
     '<div style="display:flex;flex-direction:column;gap:12px"><h3 style="font-size:24px">Ejemplos en contexto</h3>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px">' + examples + '</div></div>' +
     '<div style="display:flex;justify-content:flex-end">' +
@@ -947,6 +948,52 @@ function renderCard(entry, saved) {
   el.querySelectorAll("[data-say]").forEach((b) => b.addEventListener("click", () => say(b.dataset.say, 0.95)));
   const sv = $("save");
   if (sv) sv.addEventListener("click", () => save(entry));
+  if (groupOf(entry.pos) === "verbo" && !entry.conj) loadConj(entry, saved);
+}
+
+/* ---------- conjugación de verbos (regulares e irregulares) ---------- */
+function cleanConj(c) {
+  if (!c || !Array.isArray(c.tenses)) return null;
+  const tenses = c.tenses
+    .filter((t) => t && Array.isArray(t.forms) && t.forms.length)
+    .slice(0, 6)
+    .map((t) => ({ name: String(t.name || "").slice(0, 40), forms: t.forms.slice(0, 6).map((f) => String(f).slice(0, 60)) }));
+  return tenses.length ? { irregular: !!c.irregular, tenses: tenses } : null;
+}
+
+function conjHtml(conj) {
+  const tag = conj.irregular
+    ? '<span class="pill" style="background:#FFE9F0;color:#B01A48">Irregular</span>'
+    : '<span class="pill" style="background:#D6F5EA;color:#0B6B58">Regular</span>';
+  return '<div style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h3 style="font-size:24px">Conjugación</h3>' + tag + '</div>' +
+    conj.tenses.map((t) => '<div class="box" style="background:#EDE7FF"><span style="font-weight:800;font-size:13px;color:#4B2FD0">' + esc(t.name) + '</span>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:6px 16px;margin-top:6px">' +
+      t.forms.map((f) => '<span style="font-size:16px;font-weight:700">' + esc(f) + '</span>').join("") + '</div></div>').join("") + '</div>';
+}
+
+async function loadConj(entry, saved) {
+  if (entry.conjLoading) return;
+  entry.conjLoading = true;
+  const box = () => (current && current.entry === entry ? $("conjBox") : null);
+  try {
+    const token = await user.getIdToken();
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" },
+      body: JSON.stringify({ word: entry.word, mode: "conj" })
+    });
+    const conj = cleanConj(await res.json());
+    if (!res.ok || !conj) throw new Error("conj");
+    entry.conj = conj;
+    // Si la palabra ya está guardada (aunque se haya guardado mientras cargaba), guardamos la conjugación para la próxima vez.
+    const key = String(entry.word).toLowerCase();
+    if (saved || words.some((w) => w.word === key)) await setDoc(doc(db, "users", user.uid, "words", key), { conj: conj }, { merge: true });
+    if (box()) box().innerHTML = conjHtml(conj);
+  } catch (e) {
+    if (box()) box().innerHTML = '<p class="sub" style="margin:0">No pudimos cargar la conjugación. Volvé a buscar la palabra más tarde.</p>';
+  } finally {
+    entry.conjLoading = false;
+  }
 }
 
 async function save(entry) {
@@ -961,6 +1008,7 @@ async function save(entry) {
       es: entry.es || "",
       esLong: entry.esLong || "",
       syn: entry.syn || "",
+      conj: entry.conj || null,
       examples: entry.examples || [],
       addedAt: serverTimestamp()
     });

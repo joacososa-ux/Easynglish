@@ -9,6 +9,13 @@ const SYSTEM = 'You are an English teacher for a Spanish speaker. ' +
   '"en" is a short simple English definition. "es" is a short Spanish translation. "esLong" is one Spanish sentence explaining the meaning. ' +
   '"hit" is the exact word or phrase as it appears inside that example "en". If the word has several meanings, use the most common one. Never add text outside the JSON.';
 
+const CONJ_SYSTEM = 'You are an English teacher for a Spanish speaker. ' +
+  'Given one English verb, reply ONLY with a JSON object, no markdown, shaped like: ' +
+  '{"irregular":false,"tenses":[{"name":"Presente simple","forms":["I work","you work","he works","we work","you work","they work"]}]}. ' +
+  'Use exactly these tenses, in this order, with these Spanish names: "Presente simple", "Pasado simple", "Futuro simple" (will), "Presente perfecto" (have/has + past participle), "Presente continuo" (am/is/are + -ing). ' +
+  'Each tense has exactly 6 forms in this person order: I, you, he/she/it, we, you, they, written as full phrases with the pronoun. ' +
+  '"irregular" is true when the past form or the past participle does not follow the regular -ed pattern. Never add text outside the JSON.';
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
@@ -29,10 +36,14 @@ export default {
     const word = String(body.word || "").trim().toLowerCase().slice(0, 60);
     if (!/^[a-z][a-z' -]*$/.test(word)) return reply({ error: "invalid_word" }, 400, cors);
 
-    const key = "u:" + uid + ":" + new Date().toISOString().slice(0, 10);
-    const used = parseInt((await env.USAGE.get(key)) || "0", 10);
-    if (used >= DAILY_LIMIT) return reply({ error: "daily_limit" }, 429, cors);
-    await env.USAGE.put(key, String(used + 1), { expirationTtl: 172800 });
+    // mode "conj": conjugation table for a verb. Cheap and cached on the client, so it doesn't use the daily search quota.
+    const conjMode = body.mode === "conj";
+    if (!conjMode) {
+      const key = "u:" + uid + ":" + new Date().toISOString().slice(0, 10);
+      const used = parseInt((await env.USAGE.get(key)) || "0", 10);
+      if (used >= DAILY_LIMIT) return reply({ error: "daily_limit" }, 429, cors);
+      await env.USAGE.put(key, String(used + 1), { expirationTtl: 172800 });
+    }
 
     const ai = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -42,10 +53,10 @@ export default {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 900,
+        max_tokens: conjMode ? 1500 : 900,
         response_format: { type: "json_object" },
         messages: [
-          { role: "system", content: SYSTEM },
+          { role: "system", content: conjMode ? CONJ_SYSTEM : SYSTEM },
           { role: "user", content: word }
         ]
       })
